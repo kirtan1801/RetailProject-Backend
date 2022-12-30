@@ -1,4 +1,5 @@
 const User = require('../model/userModel');
+const factory = require('./handlerFactory');
 
 exports.getAllUser = async (req, res, next) => {
     try {
@@ -21,11 +22,24 @@ exports.getAllUser = async (req, res, next) => {
 exports.updateProfile = async (req, res, next) => {
     try {
         const data = await User.findByPk(req.params.id);
+        //need to optimize this
         if (req.body.name) {
             data.name = req.body.name;
         }
         if (req.body.email) {
             data.email = req.body.email;
+        }
+        if (req.body.addressLine) {
+            data.addressLine = req.body.addressLine;
+        }
+        if (req.body.city) {
+            data.city = req.body.city;
+        }
+        if (req.body.pincode) {
+            data.pincode = req.body.pincode;
+        }
+        if (req.body.country) {
+            data.country = req.body.country;
         }
         await data.save();
         res.status(200).json({
@@ -37,7 +51,7 @@ exports.updateProfile = async (req, res, next) => {
     } catch (err) {
         res.status(404).json({
             status: 'failed',
-            message: 'No user found',
+            message: 'Something went wrong',
         });
     }
 };

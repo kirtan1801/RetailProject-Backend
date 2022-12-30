@@ -5,9 +5,14 @@ const userController = require('../controller/userController');
 
 const router = express.Router();
 
-router.route('/').post(authController.signup).get(userController.getAllUser);
+router
+    .route('/')
+    .post(authController.signup)
+    .get(authController.protect, userController.getAllUser);
 
 router.route('/login').post(authController.login);
+
+router.use(authController.protect);
 
 router
     .route('/:id')

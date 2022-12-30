@@ -1,50 +1,34 @@
 const Sequelize = require('sequelize');
 const db = require('../utils/database');
 
-const userSchema = db.define('users', {
+const productSchema = db.define('users', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true,
     },
-    name: {
+    productName: {
         type: Sequelize.STRING,
         allowNull: false,
     },
-    email: {
-        // need to check. Even if this got failed, id got incremented.
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-    },
-    addressLine: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    city: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    country: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    pincode: {
+    price: {
         type: Sequelize.NUMBER,
         allowNull: false,
     },
-    role: {
-        type: Sequelize.ENUM('admin', 'user'),
-    },
-    password: {
-        //need to validate password
+    brand: {
         type: Sequelize.STRING,
-        allowNull: false,
     },
-    passwordChangedAt: {
-        type: Sequelize.DATE,
-        defaultValue: Sequelize.NOW,
+    description: {
+        type: Sequelize.STRING,
+    },
+    averageRating: {
+        type: Sequelize.NUMBER,
+        default: 0,
+    },
+    totalRatings: {
+        type: Sequelize.NUMBER,
+        default: 0,
     },
     active: {
         type: Sequelize.BOOLEAN,
@@ -60,4 +44,4 @@ const userSchema = db.define('users', {
     },
 });
 
-module.exports = userSchema;
+module.exports = productSchema;
