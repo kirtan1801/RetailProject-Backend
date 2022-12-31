@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../utils/database');
 
-const productSchema = db.define('users', {
+const productSchema = db.define('product', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -9,6 +9,10 @@ const productSchema = db.define('users', {
         primaryKey: true,
     },
     productName: {
+        type: Sequelize.STRING,
+        allowNull: false,
+    },
+    category: {
         type: Sequelize.STRING,
         allowNull: false,
     },

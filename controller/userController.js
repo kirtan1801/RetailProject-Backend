@@ -26,11 +26,8 @@ exports.updateProfile = async (req, res, next) => {
         if (req.body.name) {
             data.name = req.body.name;
         }
-        if (req.body.email) {
-            data.email = req.body.email;
-        }
-        if (req.body.addressLine) {
-            data.addressLine = req.body.addressLine;
+        if (req.body.address) {
+            data.address = req.body.address;
         }
         if (req.body.city) {
             data.city = req.body.city;
@@ -40,6 +37,18 @@ exports.updateProfile = async (req, res, next) => {
         }
         if (req.body.country) {
             data.country = req.body.country;
+        }
+        if (req.body.email || req.body.phone || req.body.password) {
+            res.satatus(400).json({
+                status: 'failed',
+                message: 'email and phone number can not be changed.',
+            });
+        }
+        if (req.body.password) {
+            res.status(400).json({
+                status: 'failed',
+                message: 'Password cannot changed from here',
+            });
         }
         await data.save();
         res.status(200).json({

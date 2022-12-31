@@ -66,10 +66,9 @@ exports.signup = async (req, res, next) => {
         const newUser = await User.create({
             name: req.body.name,
             email: req.body.email,
-            addressLine: req.body.addressLine,
-            city: req.body.city,
-            country: req.body.country,
-            pincode: req.body.pincode,
+            phoneNumber: req.body.phoneNumber,
+            alternateNumber: req.body.alternateNumber,
+            address: req.body.address,
             role: req.body.role,
             password: hashed,
         });
@@ -103,10 +102,33 @@ exports.login = async (req, res, next) => {
     }
 };
 
-//Need to implement restrict to functionality
-// exports.resritctTo =
-//     (...roles) =>
-//     async (req, res, next) => {
-//         const userRole = await User.findOne({ where: {email: }})
-//         next();
-//     };
+exports.deactivateUserByID = async (req, res, next) => {
+    try {
+        const data = await User.findOne({ where: { id: req.params.id } });
+        // console.log(data);
+        data.active = 0;
+        await data.save();
+        res.status(204).json({
+            status: 'success',
+            message: 'You account is deactivated',
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'failed',
+            error: err,
+        });
+    }
+};
+
+// exports.restrictTo = (roles) => (req, res, next) => {
+//     console.log(req);
+//     if (!roles.includes(req.params.role)) {
+//         return next(
+//             res.status(404).json({
+//                 status: 'failed',
+//                 message: 'you do not have permission to perform this action',
+//             })
+//         );
+//     }
+//     next();
+// };

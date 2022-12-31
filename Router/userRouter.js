@@ -10,13 +10,16 @@ router
     .post(authController.signup)
     .get(authController.protect, userController.getAllUser);
 
+// router.post('/forgotPassword', authController.forgotPassword);
+
 router.route('/login').post(authController.login);
 
-router.use(authController.protect);
+// router.use(authController.protect);
 
 router
     .route('/:id')
     .get(userController.getUserById)
-    .patch(userController.updateProfile);
+    .patch(userController.updateProfile)
+    .delete(authController.deactivateUserByID);
 
 module.exports = router;

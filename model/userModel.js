@@ -18,20 +18,15 @@ const userSchema = db.define('users', {
         allowNull: false,
         unique: true,
     },
-    addressLine: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    city: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    country: {
-        type: Sequelize.STRING,
-        allowNull: false,
-    },
-    pincode: {
+    phoneNumber: {
         type: Sequelize.NUMBER,
+        allowNull: false,
+    },
+    alternateNumber: {
+        type: Sequelize.NUMBER,
+    },
+    address: {
+        type: Sequelize.JSON,
         allowNull: false,
     },
     role: {
