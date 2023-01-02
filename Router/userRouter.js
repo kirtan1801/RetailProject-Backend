@@ -8,7 +8,11 @@ const router = express.Router();
 router
     .route('/')
     .post(authController.signup)
-    .get(authController.protect, userController.getAllUser);
+    .get(
+        authController.protect,
+        authController.restrictTo('admin'),
+        userController.getAllUser
+    );
 
 // router.post('/forgotPassword', authController.forgotPassword);
 

@@ -1,5 +1,4 @@
 const User = require('../model/userModel');
-const factory = require('./handlerFactory');
 
 exports.getAllUser = async (req, res, next) => {
     try {
@@ -7,6 +6,7 @@ exports.getAllUser = async (req, res, next) => {
         res.status(200).json({
             status: 'success',
             result: {
+                totalData: allUsers.length,
                 allUsers,
             },
         });

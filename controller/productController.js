@@ -31,6 +31,7 @@ exports.getAllProducts = async (req, res, next) => {
         res.status(200).json({
             status: 'success',
             result: {
+                totalData: data.length,
                 data,
             },
         });

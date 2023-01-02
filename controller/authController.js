@@ -28,37 +28,51 @@ const createSendToken = (user, statusCode, res) => {
 };
 
 exports.protect = async (req, res, next) => {
-    try {
-        let token;
-        if (
-            req.headers.authorization &&
-            req.headers.authorization.startsWith('Bearer')
-        ) {
-            token = req.headers.authorization.split(' ')[1];
-        }
-        console.log(`token: ${token}`);
-        if (!token) {
-            return next(
-                res.status(404).json({
-                    status: 'failed',
-                    message: 'You are not logged in...',
-                })
-            );
-        }
-        const dcode = await promisify(jwt.verify)(
-            token,
-            process.env.JWT_SECRET
-        );
-        next();
-    } catch (err) {
+    let token;
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith('Bearer')
+    ) {
+        token = req.headers.authorization.split(' ')[1];
+    }
+    console.log(`token: ${token}`);
+    if (!token) {
         return next(
             res.status(404).json({
                 status: 'failed',
-                message: err,
+                message: 'You are not logged in...',
             })
         );
     }
+    const dcode = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+    const freshUser = await User.findOne({ where: { id: dcode.id } });
+    if (!freshUser) {
+        return next(
+            res.status(401).json({
+                status: 'failed',
+                error: 'The user belonging to the token does not exist',
+            })
+        );
+    }
+    req.user = freshUser;
+    // console.log(`freshUser : ${freshUser}`);
+    next();
 };
+
+exports.restrictTo =
+    (...roles) =>
+    (req, res, next) => {
+        console.log(`req.user.role: ${req.user.role}`);
+        if (!roles.includes(req.user.role)) {
+            return next(
+                res.status(403).json({
+                    status: 'failed',
+                    message: 'You do not have permission this action',
+                })
+            );
+        }
+        next();
+    };
 
 exports.signup = async (req, res, next) => {
     try {
@@ -119,16 +133,3 @@ exports.deactivateUserByID = async (req, res, next) => {
         });
     }
 };
-
-// exports.restrictTo = (roles) => (req, res, next) => {
-//     console.log(req);
-//     if (!roles.includes(req.params.role)) {
-//         return next(
-//             res.status(404).json({
-//                 status: 'failed',
-//                 message: 'you do not have permission to perform this action',
-//             })
-//         );
-//     }
-//     next();
-// };
