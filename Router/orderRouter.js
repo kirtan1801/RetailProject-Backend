@@ -7,7 +7,7 @@ const router = express.Router();
 
 router
     .route('/')
-    .post(orderController.createOrder)
+    .post(authController.protect, orderController.createOrder)
     .get(
         authController.protect,
         authController.restrictTo('admin'),

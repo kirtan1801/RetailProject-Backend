@@ -21,6 +21,11 @@ router
         authController.protect,
         authController.restrictTo('admin'),
         productController.updateProduct
+    )
+    .delete(
+        authController.protect,
+        authController.restrictTo('admin'),
+        productController.deactiveProductByID
     );
 
 module.exports = router;

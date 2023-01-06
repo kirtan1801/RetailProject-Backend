@@ -12,15 +12,12 @@ exports.createOrder = async (req, res, next) => {
                 message: 'product not found',
             });
         }
-
         const data = await Order.create({
-            //need to replace idUser with current loggedin user
-            idUser: req.body.idUser,
+            idUser: req.user.id,
             orderType: req.body.orderType,
             idProduct: req.body.idProduct,
             quantity: req.body.quantity,
-            //need to replace grandTotal with productprice * quantity
-            grandTotal: req.body.grandTotal,
+            grandTotal: req.body.quantity * prodcutDetails.price,
         });
         console.log(data);
         res.status(201).json({
