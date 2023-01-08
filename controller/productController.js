@@ -1,4 +1,5 @@
 const Product = require('../model/productsModels');
+const Review = require('../model/reviewModel');
 
 exports.createProduct = async (req, res, next) => {
     try {
@@ -50,10 +51,15 @@ exports.getAllProducts = async (req, res, next) => {
 exports.getProductByID = async (req, res, next) => {
     try {
         const product = await Product.findOne({ where: { id: req.params.id } });
+        const review = await Review.findAll({
+            where: { idProduct: req.params.id },
+        });
         res.status(200).json({
             status: 'success',
             data: {
                 product,
+                totalReviews: review.length,
+                reviews: review,
             },
         });
     } catch (err) {

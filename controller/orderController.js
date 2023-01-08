@@ -6,16 +6,10 @@ exports.createOrder = async (req, res, next) => {
         const prodcutDetails = await Product.findOne({
             where: { id: req.body.idProduct },
         });
-        if (!prodcutDetails) {
-            res.status(404).json({
-                status: 'failed',
-                message: 'product not found',
-            });
-        }
         const data = await Order.create({
             idUser: req.user.id,
             orderType: req.body.orderType,
-            idProduct: req.body.idProduct,
+            idProduct: prodcutDetails.id,
             quantity: req.body.quantity,
             grandTotal: req.body.quantity * prodcutDetails.price,
         });
