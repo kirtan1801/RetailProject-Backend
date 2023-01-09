@@ -1,23 +1,8 @@
 const User = require('../model/userModel');
+const fact = require('./handlerFactory');
 
-exports.getAllUser = async (req, res, next) => {
-    try {
-        const allUsers = await User.findAll();
-        res.status(200).json({
-            status: 'success',
-            result: {
-                totalData: allUsers.length,
-                allUsers,
-            },
-        });
-    } catch (err) {
-        console.log(err);
-        res.status(400).json({
-            status: 'failed',
-            message: err,
-        });
-    }
-};
+exports.getAllUser = fact.getAll(User);
+exports.deleteUser = fact.deleteOne(User);
 
 exports.updateProfile = async (req, res, next) => {
     try {

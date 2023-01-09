@@ -6,6 +6,10 @@ const userController = require('../controller/userController');
 const router = express.Router();
 
 router
+    .route('/delete')
+    .delete(authController.protect, authController.deactivateUser);
+
+router
     .route('/')
     .post(authController.signup)
     .get(
@@ -14,16 +18,16 @@ router
         userController.getAllUser
     );
 
-// router.post('/forgotPassword', authController.forgotPassword);
-
 router.route('/login').post(authController.login);
-
-// router.use(authController.protect);
 
 router
     .route('/:id')
     .get(userController.getUserById)
     .patch(userController.updateProfile)
-    .delete(authController.deactivateUserByID);
+    .delete(
+        authController.protect,
+        authController.restrictTo('admin'),
+        userController.deleteUser
+    );
 
 module.exports = router;

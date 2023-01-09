@@ -26,7 +26,7 @@ router
     .delete(
         authController.protect,
         authController.restrictTo('admin'),
-        productController.deactiveProductByID
+        productController.deleteProductById
     );
 
 module.exports = router;

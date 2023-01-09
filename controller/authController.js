@@ -62,7 +62,6 @@ exports.protect = async (req, res, next) => {
 exports.restrictTo =
     (...roles) =>
     (req, res, next) => {
-        console.log(`req.user.role: ${req.user.role}`);
         if (!roles.includes(req.user.role)) {
             return next(
                 res.status(403).json({
@@ -116,17 +115,17 @@ exports.login = async (req, res, next) => {
     }
 };
 
-exports.deactivateUserByID = async (req, res, next) => {
+exports.deactivateUser = async (req, res, next) => {
     try {
-        const data = await User.findOne({ where: { id: req.params.id } });
-        // console.log(data);
+        const data = await User.findOne({ where: { id: req.user.id } });
         data.active = 0;
         await data.save();
-        res.status(204).json({
+        res.status(200).json({
             status: 'success',
             message: 'You account is deactivated',
         });
     } catch (err) {
+        console.log(`data: ${JSON.stringify(req.user)}`);
         res.status(404).json({
             status: 'failed',
             error: err,
