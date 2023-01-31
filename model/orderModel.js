@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../utils/database');
 
-const project = db.define('orders', {
+const order = db.define('orders', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -37,4 +37,4 @@ const project = db.define('orders', {
     },
 });
 
-module.exports = project;
+module.exports = order;

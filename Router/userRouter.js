@@ -19,6 +19,7 @@ router
     );
 
 router.route('/login').post(authController.login);
+router.route('/forgotPassword').patch(authController.forgotPassword);
 
 router
     .route('/:id')

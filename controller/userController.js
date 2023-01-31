@@ -11,8 +11,11 @@ exports.updateProfile = async (req, res, next) => {
         if (req.body.name) {
             data.name = req.body.name;
         }
-        if (req.body.address) {
-            data.address = req.body.address;
+        if (req.body.addressLine1) {
+            data.addressLine1 = req.body.addressLine1;
+        }
+        if (req.body.addressLine2) {
+            data.addressLine1 = req.body.addressLine2;
         }
         if (req.body.city) {
             data.city = req.body.city;

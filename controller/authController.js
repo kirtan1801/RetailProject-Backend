@@ -2,6 +2,7 @@ const bcrypt = require('bcrypt');
 const { promisify } = require('util');
 const User = require('../model/userModel');
 const jwt = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
 
 const signToken = (id) =>
     jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -81,7 +82,11 @@ exports.signup = async (req, res, next) => {
             email: req.body.email,
             phoneNumber: req.body.phoneNumber,
             alternateNumber: req.body.alternateNumber,
-            address: req.body.address,
+            country: req.body.country,
+            city: req.body.city,
+            pincode: req.body.pincode,
+            addressLine1: req.body.addressLine1,
+            addressLine2: req.body.addressLine2,
             role: req.body.role,
             password: hashed,
         });
@@ -129,6 +134,60 @@ exports.deactivateUser = async (req, res, next) => {
         res.status(404).json({
             status: 'failed',
             error: err,
+        });
+    }
+};
+
+exports.forgotPassword = async (req, res, next) => {
+    try {
+        const user = await User.findOne({ where: { email: req.body.email } });
+        if (!user) {
+            res.status(404).json({
+                status: 'failed',
+                message: 'User not found',
+            });
+        }
+        const resetToken = signToken(user.id);
+        const cookieOpetions = {
+            expires: new Date(
+                Date.now() +
+                    process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+            ),
+            httpOnly: true,
+        };
+        res.cookie('jwt', resetToken, cookieOpetions);
+        const transporter = nodemailer.createTransport({
+            host: process.env.EMAIL_HOST,
+            port: process.env.EMAIL_PORT,
+            auth: {
+                user: process.env.EMAIL_USERNAME,
+                pass: process.env.EMAIL_PASSWORD,
+            },
+        });
+        const mailOptions = {
+            from: 'kachhatrala181@gmail.com',
+            to: user.email,
+            subject: 'Password reset',
+            html: `<p>You are receiving this because you (or someone else) have requested the reset of the password for your account.
+            Please click on the following link, or paste this into your browser to complete the process:</p>
+            <a href="http://localhost:8002/reset/${resetToken}">http://localhost:8002/reset/${resetToken}</a>`,
+        };
+        try {
+            await transporter.sendMail(mailOptions);
+            console.log(`resetToken: ${resetToken}`);
+            res.status(200).json({
+                status: 'success',
+                message: 'token sent to the mail',
+            });
+        } catch (err) {
+            res.status(500).json({
+                status: 'failed',
+            });
+        }
+    } catch (err) {
+        res.status(400).json({
+            status: 'failed',
+            err: err,
         });
     }
 };

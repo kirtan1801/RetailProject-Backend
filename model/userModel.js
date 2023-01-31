@@ -1,4 +1,5 @@
 const Sequelize = require('sequelize');
+const crypto = require('crypto');
 const db = require('../utils/database');
 
 const userSchema = db.define('users', {
@@ -19,15 +20,11 @@ const userSchema = db.define('users', {
         unique: true,
     },
     phoneNumber: {
-        type: Sequelize.NUMBER,
+        type: Sequelize.STRING,
         allowNull: false,
     },
     alternateNumber: {
-        type: Sequelize.NUMBER,
-    },
-    address: {
-        type: Sequelize.JSON,
-        allowNull: false,
+        type: Sequelize.STRING,
     },
     role: {
         type: Sequelize.ENUM('admin', 'user'),
@@ -40,6 +37,31 @@ const userSchema = db.define('users', {
     passwordChangedAt: {
         type: Sequelize.DATE,
         defaultValue: Sequelize.NOW,
+    },
+    passwordResetToken: {
+        type: Sequelize.STRING,
+    },
+    passwordResetExpire: {
+        type: Sequelize.DATE,
+    },
+    country: {
+        type: Sequelize.STRING,
+        allowNull: false,
+    },
+    city: {
+        type: Sequelize.STRING,
+        allowNull: false,
+    },
+    pincode: {
+        type: Sequelize.NUMBER,
+        allowNull: false,
+    },
+    addressLine1: {
+        type: Sequelize.STRING,
+        allowNull: false,
+    },
+    addressLine2: {
+        type: Sequelize.STRING,
     },
     active: {
         type: Sequelize.BOOLEAN,
