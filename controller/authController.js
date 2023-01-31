@@ -112,7 +112,6 @@ exports.login = async (req, res, next) => {
             });
         }
     } catch (err) {
-        console.log(req.body);
         res.status(404).json({
             status: 'failed',
             message: 'User not found',
@@ -188,6 +187,39 @@ exports.forgotPassword = async (req, res, next) => {
         res.status(400).json({
             status: 'failed',
             err: err,
+        });
+    }
+};
+
+exports.resetPassword = async (req, res, next) => {
+    try {
+        const data = await User.findOne({
+            where: { email: req.body.email },
+        });
+        const hashed = await bcrypt.compare(
+            req.body.oldPassword,
+            data.password
+        );
+        if (hashed) {
+            const newHashed = await bcrypt.hash(req.body.newPassword, 10);
+            data.password = newHashed;
+            await data.save();
+            res.status(200).json({
+                status: 'success',
+                data: {
+                    data,
+                },
+            });
+        } else {
+            res.status(404).json({
+                status: 'failed',
+                message: 'Wrong Password',
+            });
+        }
+    } catch (err) {
+        res.status(404).json({
+            status: 'failed',
+            message: 'User not found',
         });
     }
 };
