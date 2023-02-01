@@ -1,5 +1,4 @@
 const Sequelize = require('sequelize');
-const crypto = require('crypto');
 const db = require('../utils/database');
 
 const userSchema = db.define('users', {

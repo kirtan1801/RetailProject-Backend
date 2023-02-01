@@ -34,22 +34,6 @@ exports.createOne = (Model) => async (req, res, next) => {
     }
 };
 
-exports.getOne = (Model, populateOptions) =>
-    catchAsync(async (req, res, next) => {
-        let query = Model.findById(req.params.id);
-        if (populateOptions) query = query.populate(populateOptions);
-        const data = await query;
-        if (!data) {
-            return next(new AppError('No data found with the given id', 404));
-        }
-        res.status(200).json({
-            status: 'success',
-            data: {
-                data,
-            },
-        });
-    });
-
 //done
 exports.getAll = (Model) => async (req, res, next) => {
     try {
