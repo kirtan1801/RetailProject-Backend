@@ -8,12 +8,15 @@ const router = express.Router();
 router
     .route('/')
     .post(authController.protect, orderController.createOrder)
+    .get(authController.protect, orderController.getOrderByUser);
+
+router
+    .route('/getAll')
     .get(
         authController.protect,
         authController.restrictTo('admin'),
         orderController.getAllOrder
     );
-
 router
     .route('/:id')
     .get(orderController.getOrderByid)

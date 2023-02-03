@@ -15,13 +15,9 @@ const order = db.define('orders', {
     orderType: {
         type: Sequelize.ENUM('saleOrder', 'returnOrder'),
     },
-    idProduct: {
-        type: Sequelize.NUMBER,
+    orderJson: {
+        type: Sequelize.JSON,
         allowNull: false,
-    },
-    quantity: {
-        type: Sequelize.NUMBER,
-        default: 1,
     },
     grandTotal: {
         type: Sequelize.NUMBER,

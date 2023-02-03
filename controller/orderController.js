@@ -2,32 +2,7 @@ const Order = require('../model/orderModel');
 const Product = require('../model/productsModels');
 const fact = require('./handlerFactory');
 const { Op } = require('sequelize');
-
-exports.createOrder = async (req, res, next) => {
-    try {
-        const prodcutDetails = await Product.findOne({
-            where: { id: req.body.idProduct },
-        });
-        const data = await Order.create({
-            idUser: req.user.id,
-            orderType: req.body.orderType,
-            idProduct: prodcutDetails.id,
-            quantity: req.body.quantity,
-            grandTotal: req.body.quantity * prodcutDetails.price,
-        });
-        res.status(201).json({
-            status: 'success',
-            data: {
-                data,
-            },
-        });
-    } catch (err) {
-        res.status(404).json({
-            status: 'failed',
-            message: err,
-        });
-    }
-};
+const Cart = require('../model/cartModel');
 
 exports.getOrderByid = async (req, res, next) => {
     try {
@@ -79,6 +54,68 @@ exports.getAllOrder = async (req, res, next) => {
     } catch (err) {
         res.status(404).json({
             status: 'failed',
+        });
+    }
+};
+
+exports.createOrder = async (req, res, next) => {
+    try {
+        const OrderJson = await Cart.findAll({
+            where: {
+                idUser: req.user.id,
+                orderFlag: false,
+                idProduct: req.body.idProduct,
+            },
+        });
+        let sum = 0;
+        let temp = OrderJson.forEach((object, index) => {
+            sum += object.total;
+            object.orderFlag = true;
+        });
+        const data = await Order.create({
+            idUser: req.user.id,
+            orderType: 'saleOrder',
+            orderJson: OrderJson,
+            grandTotal: sum,
+        });
+        await Cart.update(
+            { orderFlag: true },
+            {
+                where: {
+                    idUser: req.user.id,
+                    idProduct: req.body.idProduct,
+                },
+            }
+        );
+        res.status(200).json({
+            status: 'success',
+            data: {
+                data,
+            },
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: 'failed',
+            error: err,
+        });
+    }
+};
+
+exports.getOrderByUser = async (req, res, next) => {
+    try {
+        const data = await Order.findAll({
+            where: { idUser: req.user.id },
+        });
+        res.status(200).json({
+            status: 'success',
+            data: {
+                data,
+            },
+        });
+    } catch (err) {
+        res.status(400).json({
+            status: 'failed',
+            error: err,
         });
     }
 };
