@@ -16,6 +16,9 @@ const productSchema = db.define('product', {
         type: Sequelize.STRING,
         allowNull: false,
     },
+    varient: {
+        type: Sequelize.STRING,
+    },
     price: {
         type: Sequelize.NUMBER,
         allowNull: false,
