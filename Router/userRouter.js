@@ -22,6 +22,14 @@ router.route('/login').post(authController.login);
 router.route('/forgotPassword').patch(authController.forgotPassword);
 router.route('/resetPassword').patch(authController.resetPassword);
 router
+    .route('/topCities')
+    .get(
+        authController.protect,
+        authController.restrictTo('admin'),
+        userController.topCities
+    );
+
+router
     .route('/:id')
     .get(userController.getUserById)
     .patch(userController.updateProfile)

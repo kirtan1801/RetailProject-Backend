@@ -64,7 +64,6 @@ exports.createOrder = async (req, res, next) => {
             where: {
                 idUser: req.user.id,
                 orderFlag: false,
-                idProduct: req.body.idProduct,
             },
         });
         let sum = 0;
@@ -83,7 +82,6 @@ exports.createOrder = async (req, res, next) => {
             {
                 where: {
                     idUser: req.user.id,
-                    idProduct: req.body.idProduct,
                 },
             }
         );

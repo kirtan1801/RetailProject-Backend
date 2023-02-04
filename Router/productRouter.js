@@ -17,7 +17,6 @@ router
 
 router
     .route('/:id')
-    .get(productController.getProductByID)
     .patch(
         authController.protect,
         authController.restrictTo('admin'),
@@ -28,5 +27,7 @@ router
         authController.restrictTo('admin'),
         productController.deleteProductById
     );
+
+router.route('/trendingProduct').get(productController.trendingProduct);
 
 module.exports = router;

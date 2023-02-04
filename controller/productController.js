@@ -1,32 +1,8 @@
 const Product = require('../model/productsModels');
 const Review = require('../model/reviewModel');
+const Cart = require('../model/cartModel.js');
 const fact = require('./handlerFactory');
-
-exports.createProduct = fact.createOne(Product);
-exports.deleteProductById = fact.deleteOne(Product);
-exports.getAllProducts = fact.getAll(Product);
-
-exports.getProductByID = async (req, res, next) => {
-    try {
-        const product = await Product.findOne({ where: { id: req.params.id } });
-        const review = await Review.findAll({
-            where: { idProduct: req.params.id },
-        });
-        res.status(200).json({
-            status: 'success',
-            data: {
-                product,
-                totalReviews: review.length,
-                reviews: review,
-            },
-        });
-    } catch (err) {
-        res.status(404).json({
-            status: 'failed',
-            message: err,
-        });
-    }
-};
+const { Op } = require('sequelize');
 
 exports.updateProduct = async (req, res, next) => {
     try {
@@ -64,3 +40,40 @@ exports.updateProduct = async (req, res, next) => {
         });
     }
 };
+
+exports.trendingProduct = async (req, res, next) => {
+    try {
+        const data = await Cart.findAll({
+            where: {
+                orderFlag: true,
+                createdAt: {
+                    [Op.gte]: Date.now() - 7 * 24 * 60 * 60 * 100,
+                },
+            },
+        });
+        const productArr = [];
+        data.forEach((Object) => {
+            productArr.push(Object.idProduct);
+        });
+        const trendingProducts = await Product.findAll({
+            where: {
+                id: productArr,
+            },
+        });
+        res.status(200).json({
+            status: 'success',
+            products: {
+                products: trendingProducts,
+            },
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'failed',
+            error: err,
+        });
+    }
+};
+
+exports.createProduct = fact.createOne(Product);
+exports.deleteProductById = fact.deleteOne(Product);
+exports.getAllProducts = fact.getAll(Product);

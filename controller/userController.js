@@ -69,3 +69,20 @@ exports.getUserById = async (req, res, next) => {
         });
     }
 };
+
+exports.topCities = async (req, res, next) => {
+    try {
+        const data = await User.sequelize.query(
+            'SELECT distinct city FROM retail.users '
+        );
+        res.status(200).json({
+            status: 'success',
+            data,
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'failed',
+            error: err,
+        });
+    }
+};

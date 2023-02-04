@@ -2,7 +2,6 @@ const catchAsync = require('../utils/catchAsync');
 const APIFeatures = require('../utils/apiFeatures');
 const { Model } = require('sequelize');
 
-//done
 exports.deleteOne = (Model) => async (req, res, next) => {
     try {
         await Model.destroy({ where: { id: req.params.id } });
@@ -16,7 +15,6 @@ exports.deleteOne = (Model) => async (req, res, next) => {
     }
 };
 
-//done
 exports.createOne = (Model) => async (req, res, next) => {
     try {
         const data = await Model.create(req.body);
@@ -34,7 +32,6 @@ exports.createOne = (Model) => async (req, res, next) => {
     }
 };
 
-//done
 exports.getAll = (Model) => async (req, res, next) => {
     try {
         const queryObj = JSON.stringify(req.query);
