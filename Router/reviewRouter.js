@@ -12,10 +12,9 @@ router
         authController.restrictTo('admin'),
         reviewController.getAllReview
     )
-    .post(authController.protect, reviewController.createReview);
+    .post(authController.protect, reviewController.createReview)
+    .patch(authController.protect, reviewController.updateReview);
 
 router.route('/:id').get(reviewController.getReviewById);
-
-// router.route('/:idUser').get(reviewController.getReviewByUser);
 
 module.exports = router;
