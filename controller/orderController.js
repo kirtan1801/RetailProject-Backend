@@ -120,24 +120,20 @@ exports.getOrderByUser = async (req, res, next) => {
 
 exports.returnOrder = async (req, res, next) => {
     try {
-        const returnOrderJson = await Cart.findAll({
+        const oldCartData = await Cart.findAll({
             where: {
                 idUser: req.user.id,
                 idProduct: req.body.idProduct,
             },
         });
+        if (!oldCartData) {
+            res.status(404).json({
+                status: 'failed',
+                message: 'You can not refund a product without buying it',
+            });
+        }
         const prodcutDetails = await Product.findOne({
             where: { id: req.body.idProduct },
-        });
-        let sum = 0;
-        let temp = returnOrderJson.forEach((Object) => {
-            sum += Object.total;
-        });
-        const data = await Order.create({
-            idUser: req.user.id,
-            orderType: 'returnOrder',
-            orderJson: returnOrderJson,
-            grandTotal: -1 * sum,
         });
         const cartData = await Cart.create({
             idUser: req.user.id,
@@ -145,6 +141,12 @@ exports.returnOrder = async (req, res, next) => {
             quantity: req.body.quantity,
             total: req.body.quantity * prodcutDetails.price * -1,
             orderFlag: 2,
+        });
+        const data = await Order.create({
+            idUser: req.user.id,
+            orderType: 'returnOrder',
+            orderJson: cartData,
+            grandTotal: -1 * prodcutDetails.price * req.body.quantity,
         });
         res.status(200).json({
             status: 'success',
@@ -156,6 +158,9 @@ exports.returnOrder = async (req, res, next) => {
             },
         });
     } catch (err) {
+        const prodcutDetails = await Product.findOne({
+            where: { id: req.body.idProduct },
+        });
         const cartData = await Cart.create({
             idUser: req.user.id,
             idProduct: req.body.idProduct,
