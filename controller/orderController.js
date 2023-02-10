@@ -67,7 +67,7 @@ exports.createOrder = async (req, res, next) => {
             },
         });
         let sum = 0;
-        let temp = OrderJson.forEach((object, index) => {
+        let temp = OrderJson.forEach((object) => {
             sum += object.total;
             object.orderFlag = true;
         });
@@ -111,6 +111,59 @@ exports.getOrderByUser = async (req, res, next) => {
             },
         });
     } catch (err) {
+        res.status(400).json({
+            status: 'failed',
+            error: err,
+        });
+    }
+};
+
+exports.returnOrder = async (req, res, next) => {
+    try {
+        const returnOrderJson = await Cart.findAll({
+            where: {
+                idUser: req.user.id,
+                idProduct: req.body.idProduct,
+            },
+        });
+        const prodcutDetails = await Product.findOne({
+            where: { id: req.body.idProduct },
+        });
+        let sum = 0;
+        let temp = returnOrderJson.forEach((Object) => {
+            sum += Object.total;
+        });
+        const data = await Order.create({
+            idUser: req.user.id,
+            orderType: 'returnOrder',
+            orderJson: returnOrderJson,
+            grandTotal: -1 * sum,
+        });
+        const cartData = await Cart.create({
+            idUser: req.user.id,
+            idProduct: req.body.idProduct,
+            quantity: req.body.quantity,
+            total: req.body.quantity * prodcutDetails.price * -1,
+            orderFlag: 2,
+        });
+        res.status(200).json({
+            status: 'success',
+            data: {
+                data,
+            },
+            cartData: {
+                cartData,
+            },
+        });
+    } catch (err) {
+        const cartData = await Cart.create({
+            idUser: req.user.id,
+            idProduct: req.body.idProduct,
+            quantity: req.body.quantity,
+            total: req.body.quantity * prodcutDetails.price * -1,
+            orderFlag: 2,
+        });
+        console.log(JSON.stringify(cartData));
         res.status(400).json({
             status: 'failed',
             error: err,

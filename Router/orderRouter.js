@@ -11,6 +11,10 @@ router
     .get(authController.protect, orderController.getOrderByUser);
 
 router
+    .route('/returnOrder')
+    .post(authController.protect, orderController.returnOrder);
+
+router
     .route('/getAll')
     .get(
         authController.protect,

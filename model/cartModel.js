@@ -25,7 +25,7 @@ const cart = db.define('cart', {
         allowNull: false,
     },
     orderFlag: {
-        type: Sequelize.BOOLEAN,
+        type: Sequelize.NUMBER,
         default: false,
     },
     createdAt: {
