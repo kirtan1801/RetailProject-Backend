@@ -2,6 +2,7 @@ const Cart = require('../model/cartModel');
 const Product = require('../model/productsModels');
 const fact = require('./handlerFactory');
 const { Op } = require('sequelize');
+const db = require('../utils/database');
 
 exports.addToCart = async (req, res, next) => {
     try {
@@ -184,6 +185,38 @@ exports.addToCartForRefund = async (req, res, next) => {
         res.status(404).json({
             status: 'failed',
             message: err,
+        });
+    }
+};
+
+exports.analysisGraph = async (req, res, next) => {
+    try {
+        const data = await db.query(
+            'SELECT sum(total)as total, createdAt as date, count(*) as count FROM retail.carts  group by createdAt'
+        );
+        const totalsaleOrder = await db.query(
+            'SELECT sum(total)as total, createdAt as date, count(*) as count FROM retail.carts where orderFlag = 1 group by createdAt'
+        );
+        const totalreturnOrder = await db.query(
+            'SELECT sum(total)as total, createdAt as date, count(*) as count FROM retail.carts where orderFlag = 3 group by createdAt'
+        );
+        res.status(200).json({
+            status: 'success',
+            data: {
+                data,
+            },
+            totalsaleOrder: {
+                totalsaleOrder,
+            },
+            totalreturnOrder: {
+                totalreturnOrder,
+            },
+        });
+    } catch (err) {
+        console.log(err);
+        res.status(404).json({
+            status: 'failed',
+            error: err,
         });
     }
 };

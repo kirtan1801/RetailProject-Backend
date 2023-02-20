@@ -132,9 +132,6 @@ exports.returnOrder = async (req, res, next) => {
                 message: 'You can not refund a product without buying it',
             });
         }
-        // const prodcutDetails = await Product.findOne({
-        //     where: { id: req.body.idProduct },
-        // });
         let sum = 0;
         let temp = returnOrderJson.forEach((object) => {
             sum += object.total;
