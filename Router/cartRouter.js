@@ -10,4 +10,9 @@ router
     .post(authController.protect, cartController.addToCart)
     .delete(authController.protect, cartController.removeFromCart)
     .get(authController.protect, cartController.viewCart);
+
+router
+    .route('/refund')
+    .post(authController.protect, cartController.addToCartForRefund);
+
 module.exports = router;

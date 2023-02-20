@@ -117,3 +117,73 @@ exports.viewCart = async (req, res, next) => {
         });
     }
 };
+
+exports.addToCartForRefund = async (req, res, next) => {
+    try {
+        const saleOrderCart = await Cart.findAll({
+            where: {
+                orderFlag: 1,
+                idUser: req.user.id,
+                idProduct: req.body.idProduct,
+            },
+        });
+        let totalQuantity = 0;
+        let temp = saleOrderCart.forEach((Object) => {
+            totalQuantity += Object.quantity;
+        });
+        const prodcutDetails = await Product.findOne({
+            where: { id: req.body.idProduct },
+        });
+        const oldData = await Cart.findOne({
+            where: {
+                idUser: req.user.id,
+                idProduct: req.body.idProduct,
+                orderFlag: 2,
+            },
+        });
+        if (oldData) {
+            if (totalQuantity < req.body.quantity + oldData.quantity * -1) {
+                res.status(400).json({
+                    status: 'failed',
+                    message: 'total quantity is more then refund quantity',
+                });
+            } else {
+                oldData.quantity -= req.body.quantity;
+                oldData.total = oldData.quantity * prodcutDetails.price;
+                await oldData.save();
+                res.status(200).json({
+                    status: 'success',
+                    data: {
+                        data: oldData,
+                    },
+                });
+            }
+        } else {
+            if (totalQuantity < req.body.quantity) {
+                res.status(400).json({
+                    status: 'failed',
+                    message: 'total quantity is more then refund quantity',
+                });
+            } else {
+                const data = await Cart.create({
+                    idUser: req.user.id,
+                    idProduct: req.body.idProduct,
+                    quantity: req.body.quantity * -1,
+                    total: req.body.quantity * prodcutDetails.price * -1,
+                    orderFlag: 2,
+                });
+                res.status(201).json({
+                    status: 'success',
+                    data: {
+                        data,
+                    },
+                });
+            }
+        }
+    } catch (err) {
+        res.status(404).json({
+            status: 'failed',
+            message: err,
+        });
+    }
+};
