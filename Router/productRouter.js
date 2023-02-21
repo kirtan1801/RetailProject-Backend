@@ -30,4 +30,20 @@ router
 
 router.route('/trendingProduct').get(productController.trendingProduct);
 
+router
+    .route('/exportsToExcel')
+    .get(
+        authController.protect,
+        authController.restrictTo('admin'),
+        productController.exportProduct
+    );
+
+router
+    .route('/deactivate')
+    .post(
+        authController.protect,
+        authController.restrictTo('admin'),
+        productController.bulkdeactivateProduct
+    );
+
 module.exports = router;
