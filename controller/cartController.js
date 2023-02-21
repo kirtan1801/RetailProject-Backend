@@ -1,5 +1,6 @@
 const Cart = require('../model/cartModel');
 const Product = require('../model/productsModels');
+const Promocode = require('../model/promocodeModel');
 const fact = require('./handlerFactory');
 const { Op } = require('sequelize');
 const db = require('../utils/database');
@@ -214,6 +215,47 @@ exports.analysisGraph = async (req, res, next) => {
         });
     } catch (err) {
         console.log(err);
+        res.status(404).json({
+            status: 'failed',
+            error: err,
+        });
+    }
+};
+
+exports.addPromocodeToCart = async (req, res, next) => {
+    try {
+        const promocodeId = await Promocode.findOne({
+            where: {
+                promocode: req.body.promocode,
+                active: true,
+                validTill: {
+                    [Op.gte]: Date.now(),
+                },
+            },
+        });
+        const oldData = await Cart.findOne({
+            where: {
+                promocode: promocodeId.id,
+            },
+        });
+        if (oldData) {
+            res.status(400).json({
+                status: 'failed',
+                message: 'This promocode is already used',
+            });
+        } else {
+            const data = await Cart.create({
+                idUser: req.user.id,
+                promocode: promocodeId.id,
+                total: promocodeId.discount * -1,
+                orderFlag: 0,
+            });
+            res.status(200).json({
+                status: 'success',
+                message: 'Promocode added successfully',
+            });
+        }
+    } catch (err) {
         res.status(404).json({
             status: 'failed',
             error: err,

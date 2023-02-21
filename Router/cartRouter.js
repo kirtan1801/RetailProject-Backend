@@ -12,6 +12,10 @@ router
     .get(authController.protect, cartController.viewCart);
 
 router
+    .route('/addPromocode')
+    .post(authController.protect, cartController.addPromocodeToCart);
+
+router
     .route('/refund')
     .post(authController.protect, cartController.addToCartForRefund);
 

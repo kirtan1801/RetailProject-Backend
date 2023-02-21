@@ -1,34 +1,28 @@
 const Sequelize = require('sequelize');
 const db = require('../utils/database');
 
-const cart = db.define('cart', {
+const promocodeSchema = db.define('promocode', {
     id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
         allowNull: false,
         primaryKey: true,
     },
-    idUser: {
+    promocode: {
+        type: Sequelize.STRING,
+        allowNull: false,
+    },
+    discount: {
         type: Sequelize.INTEGER,
         allowNull: false,
     },
-    idProduct: {
-        type: Sequelize.NUMBER,
-    },
-    quantity: {
-        type: Sequelize.NUMBER,
-        default: 1,
-    },
-    promocode: {
-        type: Sequelize.STRING,
-    },
-    total: {
-        type: Sequelize.NUMBER,
+    validTill: {
+        type: Sequelize.DATE,
         allowNull: false,
     },
-    orderFlag: {
-        type: Sequelize.NUMBER,
-        default: false,
+    active: {
+        type: Sequelize.BOOLEAN,
+        defaultValue: true,
     },
     createdAt: {
         defaultValue: Sequelize.fn('now'),
@@ -40,4 +34,4 @@ const cart = db.define('cart', {
     },
 });
 
-module.exports = cart;
+module.exports = promocodeSchema;
