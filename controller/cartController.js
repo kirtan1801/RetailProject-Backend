@@ -236,6 +236,7 @@ exports.addPromocodeToCart = async (req, res, next) => {
         const oldData = await Cart.findOne({
             where: {
                 promocode: promocodeId.id,
+                idUser: req.user.id,
             },
         });
         if (oldData) {
