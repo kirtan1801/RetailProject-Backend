@@ -3,10 +3,19 @@ const Product = require('../model/productsModels');
 const fact = require('./handlerFactory');
 const { Op } = require('sequelize');
 const Cart = require('../model/cartModel');
+const User = require('../model/userModel');
 
 exports.getOrderByid = async (req, res, next) => {
     try {
-        const data = await Order.findOne({ where: { id: req.params.id } });
+        const data = await Order.findOne({
+            where: { id: req.params.id },
+            include: [
+                {
+                    model: User,
+                    attributes: ['name', 'email', 'phoneNumber'],
+                },
+            ],
+        });
         res.status(200).json({
             status: 'success',
             data: {
@@ -20,12 +29,21 @@ exports.getOrderByid = async (req, res, next) => {
         });
     }
 };
+
 exports.deleteOrder = fact.deleteOne(Order);
 
 exports.getAllOrder = async (req, res, next) => {
     try {
         const queryObj = JSON.stringify(req.query);
-        const data = await Order.findAll({ where: JSON.parse(queryObj) });
+        const data = await Order.findAll({
+            where: JSON.parse(queryObj),
+            include: [
+                {
+                    model: User,
+                    attributes: ['name', 'email', 'phoneNumber'],
+                },
+            ],
+        });
         console.log(Date.now());
         console.log(data);
         const countTillLast7Days = await Order.count({
@@ -65,18 +83,29 @@ exports.createOrder = async (req, res, next) => {
                 idUser: req.user.id,
                 orderFlag: false,
             },
+            attributes: ['id', 'idProduct', 'quantity', 'idPromocode', 'total'],
         });
         let sum = 0;
         let temp = OrderJson.forEach((object) => {
             sum += object.total;
             object.orderFlag = true;
         });
-        const data = await Order.create({
-            idUser: req.user.id,
-            orderType: 'saleOrder',
-            orderJson: OrderJson,
-            grandTotal: sum,
-        });
+        const data = await Order.create(
+            {
+                idUser: req.user.id,
+                orderType: 'saleOrder',
+                orderJson: OrderJson,
+                grandTotal: sum,
+            },
+            {
+                include: [
+                    {
+                        model: User,
+                        attributes: ['name', 'email', 'phoneNumber'],
+                    },
+                ],
+            }
+        );
         await Cart.update(
             { orderFlag: true },
             {
@@ -103,6 +132,12 @@ exports.getOrderByUser = async (req, res, next) => {
     try {
         const data = await Order.findAll({
             where: { idUser: req.user.id },
+            include: [
+                {
+                    model: User,
+                    attributes: ['name', 'email', 'phoneNumber'],
+                },
+            ],
         });
         res.status(200).json({
             status: 'success',
@@ -125,6 +160,7 @@ exports.returnOrder = async (req, res, next) => {
                 idUser: req.user.id,
                 orderFlag: 2,
             },
+            attributes: ['id', 'idProduct', 'quantity', 'idPromocode', 'total'],
         });
         if (!returnOrderJson) {
             res.status(404).json({

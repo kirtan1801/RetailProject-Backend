@@ -13,7 +13,6 @@ const userSchema = db.define('users', {
         allowNull: false,
     },
     email: {
-        // need to check. Even if this got failed, id got incremented.
         type: Sequelize.STRING,
         allowNull: false,
         unique: true,

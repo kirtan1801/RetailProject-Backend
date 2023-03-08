@@ -1,5 +1,7 @@
 const Sequelize = require('sequelize');
 const db = require('../utils/database');
+const User = require('./userModel');
+const Product = require('./productsModels');
 
 const cart = db.define('cart', {
     id: {
@@ -13,13 +15,13 @@ const cart = db.define('cart', {
         allowNull: false,
     },
     idProduct: {
-        type: Sequelize.NUMBER,
+        type: Sequelize.INTEGER,
     },
     quantity: {
         type: Sequelize.NUMBER,
         default: 1,
     },
-    promocode: {
+    idPromocode: {
         type: Sequelize.STRING,
     },
     total: {
@@ -39,5 +41,11 @@ const cart = db.define('cart', {
         type: Sequelize.DATE,
     },
 });
+
+User.hasMany(cart, { foreignKey: 'idUser', targetKey: 'id' });
+cart.belongsTo(User, { foreignKey: 'idUser', targetKey: 'id' });
+
+Product.hasMany(cart, { foreignKey: 'idProduct', targetKey: 'id' });
+cart.belongsTo(Product, { foreignKey: 'idProduct', targetKey: 'id' });
 
 module.exports = cart;

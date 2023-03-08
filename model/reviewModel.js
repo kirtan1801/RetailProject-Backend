@@ -1,6 +1,8 @@
 const { Sequelize } = require('sequelize');
 const sequelize = require('sequelize');
 const db = require('../utils/database');
+const User = require('./userModel');
+const Product = require('./productsModels');
 
 const reviewSchema = db.define('reviews', {
     id: {
@@ -33,5 +35,11 @@ const reviewSchema = db.define('reviews', {
         type: Sequelize.DATE,
     },
 });
+
+User.hasMany(reviewSchema, { foreignKey: 'idUser', targetKey: 'id' });
+reviewSchema.belongsTo(User, { foreignKey: 'idUser', targetKey: 'id' });
+
+Product.hasMany(reviewSchema, { foreignKey: 'idProduct', targetKey: 'id' });
+reviewSchema.belongsTo(Product, { foreignKey: 'idProduct', targetKey: 'id' });
 
 module.exports = reviewSchema;

@@ -15,6 +15,10 @@ router
     .post(authController.protect, reviewController.createReview)
     .patch(authController.protect, reviewController.updateReview);
 
+router
+    .route('/reviewByUser')
+    .get(authController.protect, reviewController.getReviewByUser);
+
 router.route('/:id').get(reviewController.getReviewById);
 
 module.exports = router;

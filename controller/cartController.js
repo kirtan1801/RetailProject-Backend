@@ -1,8 +1,9 @@
+const { Op } = require('sequelize');
 const Cart = require('../model/cartModel');
 const Product = require('../model/productsModels');
 const Promocode = require('../model/promocodeModel');
+const User = require('../model/userModel');
 const fact = require('./handlerFactory');
-const { Op } = require('sequelize');
 const db = require('../utils/database');
 
 exports.addToCart = async (req, res, next) => {
@@ -16,6 +17,22 @@ exports.addToCart = async (req, res, next) => {
                 idProduct: prodcutDetails.id,
                 orderFlag: false,
             },
+            include: [
+                {
+                    model: User,
+                    attributes: ['name', 'email', 'phoneNumber'],
+                },
+                {
+                    model: Product,
+                    attributes: [
+                        'productName',
+                        'category',
+                        'varient',
+                        'price',
+                        'brand',
+                    ],
+                },
+            ],
         });
         if (oldData) {
             oldData.quantity = oldData.quantity + req.body.quantity;
@@ -28,12 +45,26 @@ exports.addToCart = async (req, res, next) => {
                 },
             });
         } else {
-            const data = await Cart.create({
-                idUser: req.user.id,
-                idProduct: prodcutDetails.id,
-                quantity: req.body.quantity,
-                total: req.body.quantity * prodcutDetails.price,
-            });
+            const data = await Cart.create(
+                {
+                    idUser: req.user.id,
+                    idProduct: prodcutDetails.id,
+                    quantity: req.body.quantity,
+                    total: req.body.quantity * prodcutDetails.price,
+                },
+                {
+                    include: [
+                        {
+                            model: User,
+                            as: 'user',
+                        },
+                        {
+                            model: Product,
+                            as: 'product',
+                        },
+                    ],
+                }
+            );
             res.status(201).json({
                 status: 'success',
                 data: {
@@ -57,7 +88,24 @@ exports.removeFromCart = async (req, res, next) => {
                 idProduct: req.body.idProduct,
                 orderFlag: false,
             },
+            include: [
+                {
+                    model: User,
+                    attributes: ['name', 'email', 'phoneNumber'],
+                },
+                {
+                    model: Product,
+                    attributes: [
+                        'productName',
+                        'category',
+                        'varient',
+                        'price',
+                        'brand',
+                    ],
+                },
+            ],
         });
+        // console.log(givenUser.product.pr);
         const prodcutDetails = await Product.findOne({
             where: { id: req.body.idProduct },
         });
@@ -105,6 +153,22 @@ exports.viewCart = async (req, res, next) => {
     try {
         const data = await Cart.findAll({
             where: { idUser: req.user.id, orderFlag: false },
+            include: [
+                {
+                    model: User,
+                    attributes: ['name', 'email', 'phoneNumber'],
+                },
+                {
+                    model: Product,
+                    attributes: [
+                        'productName',
+                        'category',
+                        'varient',
+                        'price',
+                        'brand',
+                    ],
+                },
+            ],
         });
         res.status(200).json({
             status: 'success',

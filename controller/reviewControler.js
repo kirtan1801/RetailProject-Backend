@@ -68,7 +68,25 @@ exports.createReview = async (req, res, next) => {
 
 exports.getReviewById = async (req, res, next) => {
     try {
-        const data = await Review.findOne({ where: { id: req.params.id } });
+        const data = await Review.findOne({
+            where: { id: req.params.id },
+            include: [
+                {
+                    model: User,
+                    attributes: ['name', 'email', 'phoneNumber'],
+                },
+                {
+                    model: Product,
+                    attributes: [
+                        'productName',
+                        'category',
+                        'varient',
+                        'price',
+                        'brand',
+                    ],
+                },
+            ],
+        });
         res.status(200).json({
             status: 'success',
             data: {
@@ -90,6 +108,22 @@ exports.updateReview = async (req, res, next) => {
                 idUser: req.user.id,
                 idProduct: req.body.idProduct,
             },
+            include: [
+                {
+                    model: User,
+                    attributes: ['name', 'email', 'phoneNumber'],
+                },
+                {
+                    model: Product,
+                    attributes: [
+                        'productName',
+                        'category',
+                        'varient',
+                        'price',
+                        'brand',
+                    ],
+                },
+            ],
         });
         if (req.body.rating) {
             const productDetails = await Product.findOne({
@@ -145,3 +179,38 @@ exports.updateReview = async (req, res, next) => {
 };
 
 exports.getAllReview = fact.getAll(Review);
+
+exports.getReviewByUser = async (req, res, next) => {
+    try {
+        const data = await Review.findAll({
+            where: { rating: 3 },
+            include: [
+                {
+                    model: User,
+                    attributes: ['name', 'email', 'phoneNumber'],
+                },
+                {
+                    model: Product,
+                    attributes: [
+                        'productName',
+                        'category',
+                        'varient',
+                        'price',
+                        'brand',
+                    ],
+                },
+            ],
+        });
+        res.status(200).json({
+            status: 'success',
+            data: {
+                data,
+            },
+        });
+    } catch (err) {
+        res.status(404).json({
+            status: 'failed',
+            err: err,
+        });
+    }
+};
