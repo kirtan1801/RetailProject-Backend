@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 const db = require('../utils/database');
+const User = require('./userModel');
 
 const accountSchema = db.define('accs', {
     id: {
@@ -9,14 +10,6 @@ const accountSchema = db.define('accs', {
         primaryKey: true,
     },
     idUser: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-    },
-    idOrder: {
-        type: Sequelize.INTEGER,
-        allowNull: false,
-    },
-    totalAmount: {
         type: Sequelize.INTEGER,
         allowNull: false,
     },
@@ -45,5 +38,8 @@ const accountSchema = db.define('accs', {
         type: Sequelize.DATE,
     },
 });
+
+User.hasMany(accountSchema, { foreignKey: 'idUser', targetKey: 'id' });
+accountSchema.belongsTo(User, { foreignKey: 'idUser', targetKey: 'id' });
 
 module.exports = accountSchema;

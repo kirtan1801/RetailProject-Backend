@@ -2,21 +2,16 @@ const catchAsync = require('../utils/catchAsync');
 const APIFeatures = require('../utils/apiFeatures');
 const { Model } = require('sequelize');
 
-exports.deleteOne = (Model) => async (req, res, next) => {
-    try {
+exports.deleteOne = (Model) =>
+    catchAsync(async (req, res, next) => {
         await Model.destroy({ where: { id: req.params.id } });
         res.status(204).json({
             status: 'success',
         });
-    } catch (err) {
-        res.status(404).json({
-            status: 'failed',
-        });
-    }
-};
+    });
 
-exports.createOne = (Model) => async (req, res, next) => {
-    try {
+exports.createOne = (Model) =>
+    catchAsync(async (req, res, next) => {
         const data = await Model.create(req.body);
         res.status(201).json({
             status: 'success',
@@ -24,16 +19,10 @@ exports.createOne = (Model) => async (req, res, next) => {
                 data,
             },
         });
-    } catch (err) {
-        res.status(400).json({
-            status: 'failed',
-            error: err,
-        });
-    }
-};
+    });
 
-exports.getAll = (Model) => async (req, res, next) => {
-    try {
+exports.getAll = (Model) =>
+    catchAsync(async (req, res, next) => {
         const queryObj = JSON.stringify(req.query);
         const data = await Model.findAll({ where: JSON.parse(queryObj) });
         res.status(200).json({
@@ -43,9 +32,4 @@ exports.getAll = (Model) => async (req, res, next) => {
                 data,
             },
         });
-    } catch (err) {
-        res.status(404).json({
-            status: 'failed',
-        });
-    }
-};
+    });

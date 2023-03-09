@@ -2,6 +2,7 @@ const Sequelize = require('sequelize');
 const db = require('../utils/database');
 const User = require('./userModel');
 const Product = require('./productsModels');
+const Promocode = require('./promocodeModel');
 
 const cart = db.define('cart', {
     id: {
@@ -47,5 +48,8 @@ cart.belongsTo(User, { foreignKey: 'idUser', targetKey: 'id' });
 
 Product.hasMany(cart, { foreignKey: 'idProduct', targetKey: 'id' });
 cart.belongsTo(Product, { foreignKey: 'idProduct', targetKey: 'id' });
+
+Promocode.hasMany(cart, { foreignKey: 'idPromocode', targetKey: 'id' });
+cart.belongsTo(Promocode, { foreignKey: 'idPromocode', targetKey: 'id' });
 
 module.exports = cart;
