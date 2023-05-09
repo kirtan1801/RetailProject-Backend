@@ -1,4 +1,4 @@
-# Natours: An awesome web app written in NodeJS, Express, MySQL, Sequelize
+# An awesome web app written in NodeJS, Express, MySQL, Sequelize
 
 # Build with: 
 - Node JS :- JavaScript runtime environment
