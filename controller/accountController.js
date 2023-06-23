@@ -5,7 +5,7 @@ const bcrypt = require('bcrypt');
 const catchAsync = require('../utils/catchAsync');
 
 exports.createBankDetails = catchAsync(async (req, res, next) => {
-    console.log(JSON.stringify(req.user));
+    // console.log(JSON.stringify(req.user));
     const hashedAccHolderName = await bcrypt.hash(req.body.accHolderName, 10);
     const hashedBankName = await bcrypt.hash(req.body.bankName, 10);
     const hashedBranch = await bcrypt.hash(req.body.branch, 10);
